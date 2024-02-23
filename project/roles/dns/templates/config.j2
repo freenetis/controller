@@ -1,0 +1,33 @@
+{% for zone, options in zones.items() %}
+{% set _type = options.type|default(type) %}
+{% set ips = options.other_ip_addresses|default([]) %}
+{% for vars in hostvars.values() %}
+{% if ansible_host != vars.ansible_host and zone in vars.zones and _type != vars.zones[zone].type|default(vars.type) %}
+{% for ip in vars.ip_addresses %}
+{% set tmp = ips.append(ip) %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+zone "{{ zone }}" {
+    type {{ _type }};
+    file "{{ zone }}";
+{% if _type == "master" %}
+    allow-transfer {
+{% for ip in ips %}
+        {{ ip }};
+{% endfor %}
+    };
+    inline-signing yes;
+    auto-dnssec maintain;
+    serial-update-method increment;
+    key-directory "/var/cache/bind";
+{% elif _type == "slave" %}
+    masters {
+{% for ip in ips %}
+        {{ ip }};
+{% endfor %}
+    };
+{% endif %}
+};
+
+{% endfor %}

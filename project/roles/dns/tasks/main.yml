@@ -1,0 +1,15 @@
+- name: Load zones
+  include_tasks: load_zone.yml
+  loop: "{{ zones|dict2items|sort(attribute='key') }}"
+  loop_control:
+    label: "{{ item.key }}"
+- name: Generate zones
+  include_tasks: generate_zone.yml
+  loop: "{{ zones|dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+- name: Generate config
+  template:
+    src: config.j2
+    dest: "config/{{ ansible_host }}.conf"
+  delegate_to: localhost
