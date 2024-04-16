@@ -1,10 +1,12 @@
-- name: Generate network.json
-  template:
-    src: network.j2
-    dest: network.json
-- name: Generate CSV with shaped devices
-  template:
-    src: "{{ shaped_devices_template }}"
-    dest: "{{ shaped_devices_csv }}"
-  become: true
-  notify: Reload LibreQoS
+- block:
+  - name: Generate network.json
+    template:
+      src: "{{ network_template }}"
+      dest: "{{ network_json }}"
+    become: true
+  - name: Generate CSV with shaped devices
+    template:
+      src: "{{ shaped_devices_template }}"
+      dest: "{{ shaped_devices_csv }}"
+    become: true
+  # notify: Reload LibreQoS
