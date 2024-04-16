@@ -1,0 +1,6 @@
+Circuit ID,Circuit Name,Device ID,Device Name,Parent Node,MAC,IPv4,IPv6,Download Min Mbps,Upload Min Mbps,Download Max Mbps,Upload Max Mbps,Comment
+{% for id, class in classes.json.items() %}
+{% if not class.children|length %}
+"{{ id }}","{{ class.name | unidecode }}",{{ id }},"{{ class.name | unidecode }}",,,"{{ class.ip_addresses|join(",") }}",,{{ (class.d_rate / 1048576) | round | int }},{{ (class.u_rate / 1048576) | round | int }},{{ (class.d_ceil / 1048576) | round | int }},{{ (class.u_ceil / 1048576) | round | int }},""
+{% endif %}
+{% endfor %}

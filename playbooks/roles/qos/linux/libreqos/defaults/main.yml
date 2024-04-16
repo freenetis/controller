@@ -1,0 +1,3 @@
+shaped_devices_template: ShapedDevices.j2
+shaped_devices_csv: /opt/libreqos/src/ShapedDevices.csv
+scheduler_unit: lqos_scheduler

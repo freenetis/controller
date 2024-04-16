@@ -1,0 +1,12 @@
+---
+- hosts: qos
+  name: QoS
+  gather_facts: false
+  tasks:
+    - name: FreeNetis QoS
+      include_role:
+        name: qos/freenetis
+      when: freenetis is defined
+    - name: Load QoS driver
+      include_role:
+        name: "qos/{{ driver }}"
