@@ -1,0 +1,53 @@
+#!/bin/sh
+
+usage() {
+	echo "Usage: $0 -p <playbook> [-i <inventory file>] [-s <seconds to sleep>] [-d <directory>]"
+	echo "Possible playbooks:"
+	for file in $(ls $DIRECTORY/*.yml 2>/dev/null); do
+		ansible-playbook --syntax-check $file &>/dev/null && echo $file | sed "s@$DIRECTORY/@@"
+	done
+	exit 1
+}
+
+DIRECTORY="./playbooks/"
+
+while getopts 'hi:p:s:d:' opt; do
+	case $opt in
+	i)
+		INVENTORY=$OPTARG
+		;;
+	p)
+		PLAYBOOK=$OPTARG
+		;;
+	s)
+		SLEEP=$OPTARG
+		;;
+  d)
+    DIRECTORY=${OPTARG%/}
+    ;;
+	*)
+		usage
+		;;
+	esac
+done
+
+if [ -z "$PLAYBOOK" ]; then
+	echo "Playbook is required"
+	usage
+fi
+
+if [ ! -f "$DIRECTORY/$PLAYBOOK" ]; then
+	echo "Playbook $PLAYBOOK does not exist"
+	exit 1
+fi
+
+while true; do
+	ansible-playbook ${INVENTORY:+"-i$INVENTORY"} "$DIRECTORY/$PLAYBOOK"
+
+	if [ -z $SLEEP ]; then
+		break
+	fi
+
+	echo -e "Sleeping for $SLEEP seconds...\n"
+	sleep $SLEEP
+done
