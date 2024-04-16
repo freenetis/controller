@@ -1,5 +1,5 @@
 - block:
-  - name: Generate network.json
+  - name: Generate JSON with network
     template:
       src: "{{ network_template }}"
       dest: "{{ network_json }}"
@@ -9,4 +9,4 @@
       src: "{{ shaped_devices_template }}"
       dest: "{{ shaped_devices_csv }}"
     become: true
-  # notify: Reload LibreQoS
+  notify: Reload LibreQoS
