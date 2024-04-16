@@ -1,21 +1,20 @@
 FROM python:3-alpine
 
+ENV ANSIBLE_HOST_KEY_CHECKING=False
 ENV CONTROLLER_WORKDIR="/controller/"
 
 WORKDIR ${CONTROLLER_WORKDIR}
 
-COPY requirements.txt .
+RUN apk add --update --no-cache openssh-client
 
-RUN apk add --no-cache openssh && pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt /tmp/
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
-COPY . .
+COPY requirements.yml /tmp/
+RUN ansible-galaxy install -r /tmp/requirements.yml
 
-ENV ANSIBLE_HOST_KEY_CHECKING=False
+COPY ./playbooks/ ./playbooks/
+COPY ./bin/controller /usr/local/bin
 
-VOLUME ${CONTROLLER_WORKDIR}/env/
-VOLUME ${CONTROLLER_WORKDIR}/inventory/
-VOLUME ${CONTROLLER_WORKDIR}/artifacts/
 
-RUN echo ${CONTROLLER_WORKDIR}
-
-CMD ansible-runner run ${CONTROLLER_WORKDIR} -r ${CONTROLLER_ROLE} --hosts ${CONTROLLER_HOSTS}
+CMD ["sh", "-c", "controller ${CONTROLLER_SLEEP:+\"-s$CONTROLLER_SLEEP\"} -p $CONTROLLER_PLAYBOOK"]

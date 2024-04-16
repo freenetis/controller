@@ -1,3 +1,4 @@
-env/*
-inventory/*
-artifacts/*
+Dockerfile
+docker-compose.yml
+LICENSE
+README.md
