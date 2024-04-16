@@ -1,0 +1,6 @@
+- name: Generating new ISC KEA config
+  template:
+    src: "{{ template }}"
+    dest: "{{ config }}"
+    validate: "{{ validate }}"
+  notify: DHCP server reload

@@ -1,0 +1,6 @@
+---
+- hosts: dhcp
+  name: DHCP
+  gather_facts: no
+  roles:
+    - dhcp
