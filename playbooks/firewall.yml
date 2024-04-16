@@ -1,0 +1,6 @@
+---
+- hosts: firewall
+  name: Firewall
+  gather_facts: false
+  roles:
+    - firewall

@@ -1,0 +1,4 @@
+template: nftables.j2
+config: /etc/nftables.conf
+validate: nft -c -f %s
+reload: nft -f {{ config }}
