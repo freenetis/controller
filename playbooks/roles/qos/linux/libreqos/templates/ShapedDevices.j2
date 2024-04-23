@@ -4,6 +4,6 @@ Circuit ID,Circuit Name,Device ID,Device Name,Parent Node,MAC,IPv4,IPv6,Download
 {% if not class.children|length %}
 "{{ id }}","{{ class.name | unidecode }}",{{ id }},"{{ class.name | unidecode }}","{{ names[class.parent] }}",,"{{ class.ip_addresses|join(",") }}",,{{ (class.d_rate / 1048576) | round | int }},{{ (class.u_rate / 1048576) | round | int }},{{ (class.d_ceil / 1048576) | round | int }},{{ (class.u_ceil / 1048576) | round | int }},""
 {% else %}
-{% set tmp = names.update({id | int: id|string + "_" + class.name|unidecode }) %}
+{% set tmp = names.update({id | int: class.name|unidecode }) %}
 {% endif %}
 {% endfor %}
