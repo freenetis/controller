@@ -43,9 +43,10 @@ fi
 
 while true; do
 	ansible-playbook ${INVENTORY:+"-i$INVENTORY"} "$DIRECTORY/$PLAYBOOK"
+	state=$?
 
 	if [ -z $SLEEP ]; then
-		break
+		exit $state
 	fi
 
 	echo -e "Sleeping for $SLEEP seconds...\n"
