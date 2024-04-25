@@ -1,0 +1,5 @@
+- name: Reload ISC KEA
+  service:
+    name: "{{ unit }}"
+    state: reloaded
+  become: true

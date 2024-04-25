@@ -1,0 +1,1 @@
+freenetis_dhcp_subnets: "{{ freenetis.url }}/cs/api/network/link/dhcp_subnets"

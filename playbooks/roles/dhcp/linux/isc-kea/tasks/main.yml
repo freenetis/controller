@@ -3,4 +3,5 @@
     src: "{{ template }}"
     dest: "{{ config }}"
     validate: "{{ validate }}"
-  notify: DHCP server reload
+  become: true
+  notify: Reload ISC KEA

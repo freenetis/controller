@@ -1,3 +1,0 @@
-- name: Load config
-  include_role:
-    name: "dhcp/servers/{{ server }}"
