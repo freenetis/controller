@@ -5,7 +5,7 @@ ENV CONTROLLER_WORKDIR="/controller/"
 
 WORKDIR ${CONTROLLER_WORKDIR}
 
-RUN apk add --update --no-cache openssh-client
+RUN apk add --update --no-cache openssh-client sshpass
 
 COPY requirements.txt /tmp/
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
