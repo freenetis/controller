@@ -1,0 +1,7 @@
+  - name: Generating Mikrotik script
+    local_action:
+      module: template
+      src: "{{ template }}"
+      dest: "{{ script }}"
+    become: true
+    notify: Mikrotik script copy
