@@ -1,0 +1,15 @@
+---
+- hosts: redirection
+  name: Redirection
+  gather_facts: false
+  tasks:
+    - name: FreeNetis Redirection
+      include_role:
+        name: redirection/freenetis
+      when: freenetis is defined
+    - name: Load HTTP
+      include_role:
+        name: "redirection/http/{{ http_provider }}"
+    - name: Load firewall
+      include_role:
+        name: "redirection/firewall/{{ firewall_provider }}"

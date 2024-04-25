@@ -1,0 +1,15 @@
+Listen {{ redirect_port }}
+
+<VirtualHost *:{{ redirect_port }}>
+
+   Header always set Cache-Control "no-store, no-cache, must-revalidate" env=nocache
+
+   RewriteEngine On
+   RewriteRule (.*) {{ redirection_url }}%{REQUEST_SCHEME}://%{HTTP_HOST} [R,L,E=nocache:1]
+</VirtualHost>
+
+
+Listen {{ self_cancel_port }}
+
+<VirtualHost *:{{ self_cancel_port }}>
+</VirtualHost>

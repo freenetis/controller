@@ -1,0 +1,10 @@
+- name: HTTP redirector reload
+  service:
+    name: "{{ http_redirector_unit }}"
+    state: reloaded
+  become: true
+- name: HTTP redirector restart
+  service:
+    name: "{{ http_redirector_unit }}"
+    state: restarted
+  become: true
