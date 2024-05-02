@@ -10,6 +10,7 @@
     - name: Load HTTP
       include_role:
         name: "redirection/http/{{ http_provider }}"
+      when: http_provider is defined
     - name: Load firewall
       include_role:
         name: "redirection/firewall/{{ firewall_provider }}"
