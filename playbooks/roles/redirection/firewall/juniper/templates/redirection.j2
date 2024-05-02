@@ -1,0 +1,14 @@
+delete policy-options prefix-list redirection-allowed
+set policy-options prefix-list redirection-allowed
+{% for ip in allowed.json %}
+{% if limit is not defined or ip is ansible.utils.in_network limit %}
+set policy-options prefix-list redirection-allowed {{ ip }}/32
+{% endif %}
+{% endfor %}
+delete policy-options prefix-list redirection-ranges
+set policy-options prefix-list redirection-ranges
+{% for ip in ranges.json %}
+{% if limit is not defined or limit | ansible.utils.network_in_network(ip) %}
+set policy-options prefix-list redirection-ranges {{ ip }}
+{% endif %}
+{% endfor %}
