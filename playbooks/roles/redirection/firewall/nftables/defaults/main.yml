@@ -1,4 +1,4 @@
-firewall_template: freenetis-redirection.j2
-firewall_config: /etc/freenetis-redirection.conf
+firewall_template: redirection.j2
+firewall_config: /tmp/redirection.conf
 firewall_validate: /usr/sbin/nft -c -f %s
 firewall_command: /usr/sbin/nft -f
