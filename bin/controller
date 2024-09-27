@@ -2,14 +2,16 @@
 
 # Function to display usage information
 usage() {
- echo "Usage: $0 -i <inventory file> [-s <seconds to sleep>] [-d <debug level>]"
- echo "  -i: Specify the inventory file (required)"
- echo "  -s: Specify the number of seconds to sleep between runs (optional)"
- echo "  -d: Set debug level (0-7, default is 0)"
- exit 1
+	echo "Usage: $0 -i <inventory file> [-s <seconds to sleep>] [-v <verbosity level>] [-d <directory>]"
+	echo "  -i: Specify the inventory file (required)"
+	echo "  -s: Specify the number of seconds to sleep between runs (optional)"
+	echo "  -v: Set verbosity level (0-7, default is 0)"
+	echo "  -d: Specify the directory containing the playbook (optional, default is current directory)"
+	exit 1
 }
 
-DEBUG=0
+VERBOSITY=0
+DIRECTORY="."
 
 while getopts 'hi:s:d:' opt; do
 	case $opt in
@@ -19,16 +21,19 @@ while getopts 'hi:s:d:' opt; do
 	s)
 		SLEEP=$OPTARG
 		;;
-	d)
-		DEBUG=$OPTARG
+	v)
+		VERBOSITY=$OPTARG
 		;;
+	d)
+    	DIRECTORY=${OPTARG%/}
+    	;;
 	*)
 		usage
 		;;
 	esac
 done
 
-for i in `seq 1 $DEBUG`;
+for i in `seq 1 $VERBOSITY`;
 do
 	VERBOSE=$VERBOSE"v"
 done
@@ -44,7 +49,7 @@ if [ ! -f "$INVENTORY" ]; then
 fi
 
 while true; do
-	ansible-playbook ${VERBOSE:+-$VERBOSE} -i "$INVENTORY" controller.yml
+	ansible-playbook ${VERBOSE:+-$VERBOSE} -i "$INVENTORY" "$DIRECTORY/controller.yml"
 	state=$?
 
 	if [ -z $SLEEP ]; then
