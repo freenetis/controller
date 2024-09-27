@@ -1,7 +1,0 @@
----
-- name: Generate zone {{ item.key }}
-  template:
-    src: "{{ item.value.template|default('zone.j2') }}"
-    dest: "{{ item.value.file|default('build/' + item.key) }}"
-  delegate_to: localhost
-  when: item.type|default(type) == "master"

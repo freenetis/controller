@@ -1,48 +1,50 @@
 #!/bin/sh
 
+# Function to display usage information
 usage() {
-	echo "Usage: $0 -p <playbook> [-i <inventory file>] [-s <seconds to sleep>] [-d <directory>]"
-	echo "Possible playbooks:"
-	for file in $(ls $DIRECTORY/*.yml 2>/dev/null); do
-		ansible-playbook --syntax-check $file &>/dev/null && echo $file | sed "s@$DIRECTORY/@@"
-	done
-	exit 1
+ echo "Usage: $0 -i <inventory file> [-s <seconds to sleep>] [-d <debug level>]"
+ echo "  -i: Specify the inventory file (required)"
+ echo "  -s: Specify the number of seconds to sleep between runs (optional)"
+ echo "  -d: Set debug level (0-7, default is 0)"
+ exit 1
 }
 
-DIRECTORY="./playbooks/"
+DEBUG=0
 
-while getopts 'hi:p:s:d:' opt; do
+while getopts 'hi:s:d:' opt; do
 	case $opt in
 	i)
 		INVENTORY=$OPTARG
 		;;
-	p)
-		PLAYBOOK=$OPTARG
-		;;
 	s)
 		SLEEP=$OPTARG
 		;;
-  d)
-    DIRECTORY=${OPTARG%/}
-    ;;
+	d)
+		DEBUG=$OPTARG
+		;;
 	*)
 		usage
 		;;
 	esac
 done
 
-if [ -z "$PLAYBOOK" ]; then
-	echo "Playbook is required"
+for i in `seq 1 $DEBUG`;
+do
+	VERBOSE=$VERBOSE"v"
+done
+
+if [ -z "$INVENTORY" ]; then
+	echo "Inventory is required"
 	usage
 fi
 
-if [ ! -f "$DIRECTORY/$PLAYBOOK" ]; then
-	echo "Playbook $PLAYBOOK does not exist"
+if [ ! -f "$INVENTORY" ]; then
+	echo "Inventory $INVENTORY does not exist"
 	exit 1
 fi
 
 while true; do
-	ansible-playbook ${INVENTORY:+"-i$INVENTORY"} "$DIRECTORY/$PLAYBOOK"
+	ansible-playbook ${VERBOSE:+-$VERBOSE} -i "$INVENTORY" controller.yml
 	state=$?
 
 	if [ -z $SLEEP ]; then

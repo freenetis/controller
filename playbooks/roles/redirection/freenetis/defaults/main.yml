@@ -1,4 +1,0 @@
-freenetis_ranges_url: "{{ freenetis.url }}/index.php/cs/api/redirection/ranges"
-freenetis_allowed_url: "{{ freenetis.url }}/index.php/cs/api/redirection/allowed"
-freenetis_cancelable_url: "{{ freenetis.url }}/index.php/cs/api/redirection/cancelable"
-freenetis_redirection_url: "{{ freenetis.url }}/redirection/?redirect_to="

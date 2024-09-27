@@ -1,3 +1,0 @@
-- name: Reload firewall
-  command: "{{ reload }}"
-  become: true

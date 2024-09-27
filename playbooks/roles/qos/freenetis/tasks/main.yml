@@ -1,7 +1,0 @@
-- name: Downloading list of classes from FreenetIS API
-  local_action:
-    module: uri
-    url: "{{ freenetis_classes_url }}"
-    user: "{{ freenetis.user }}"
-    password: "{{ freenetis.token }}"
-  register: classes

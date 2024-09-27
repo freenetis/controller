@@ -1,4 +1,0 @@
-firewall_template: redirection.j2
-firewall_config: /tmp/redirection.conf
-firewall_validate: /usr/sbin/nft -c -f %s
-firewall_command: /usr/sbin/nft -f

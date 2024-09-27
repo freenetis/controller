@@ -1,7 +1,0 @@
-- name: Generating new ISC KEA config
-  template:
-    src: "{{ template }}"
-    dest: "{{ config }}"
-    validate: "{{ validate }}"
-  become: true
-  notify: Reload ISC KEA
