@@ -1,0 +1,31 @@
+- name: Installing Apache
+  apt:
+    name: "{{ package }}"
+    state: present
+  become: true
+- name: Starting Apache
+  service:
+    name: "{{ unit }}"
+    state: started
+  become: true
+- name: Enabling modules
+  apache2_module:
+    name: "{{ module }}"
+  loop: "{{ modules }}"
+  loop_control:
+    loop_var: module
+  become: true
+  notify: Apache restart
+- name: Generating and testing new Apache config
+  template:
+    src: "{{ redirection_template }}"
+    dest: "{{ redirection_config }}"
+  become: true
+  notify: Apache reload
+- name: Enabling new Apache config
+  file:
+    src: "{{ redirection_config }}"
+    dest: "{{ redirection_config_enabled }}"
+    state: link
+  become: true
+  notify: Apache reload

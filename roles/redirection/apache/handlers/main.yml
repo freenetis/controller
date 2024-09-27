@@ -1,0 +1,10 @@
+- name: Apache reload
+  service:
+    name: "{{ unit }}"
+    state: reloaded
+  become: true
+- name: Apache restart
+  service:
+    name: "{{ unit }}"
+    state: restarted
+  become: true

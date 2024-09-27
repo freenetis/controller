@@ -1,0 +1,71 @@
+define WHITELIST = {
+{% for host in whitelist %}
+    {{ host }}{{ ", " if not loop.last else "" }}
+{% endfor %}
+}
+define REDIRECT_PORT = {{ redirect_port }}
+define SELF_CANCEL_PORT = {{ self_cancel_port }}
+
+table ip redirection
+delete table ip redirection
+
+table ip redirection {
+
+        set allowed {
+            type ipv4_addr
+            counter
+{% if allowed | length %}
+
+            elements = {
+{% for ip in allowed %}
+                {{ ip }}{{ ", " if not loop.last else "" }}
+{% endfor %}
+            }
+{% endif %}
+        }
+
+        set ranges {
+            type ipv4_addr
+            flags interval
+            counter
+{% if ranges | length %}
+
+            elements = {
+{% for ip in ranges %}
+                {{ ip }}{{ ", " if not loop.last else "" }}
+{% endfor %}
+            }
+{% endif %}
+        }
+
+        set self_cancel {
+            type ipv4_addr
+            counter
+{% if cancelable | length %}
+
+            elements = {
+{% for ip in cancelable %}
+                {{ ip }}{{ ", " if not loop.last else "" }}
+{% endfor %}
+            }
+{% endif %}
+        }
+
+        chain forward {
+            type filter hook forward priority -50
+
+            ip daddr $WHITELIST counter accept comment "Povol přístup na whitelist IP adresy"
+            ip saddr @allowed counter accept comment "Povol internet pro IP adresy bez přesměrování"
+            ip saddr @self_cancel counter accept comment "Povol internet pro IP adresy s upozorňovacím přesměrování"
+            ip saddr @ranges counter drop comment "Zakaž internet pro IP adresy s blokujícím přesměrováním"
+        }
+
+        chain prerouting {
+            type nat hook prerouting priority -50
+
+            ip daddr $WHITELIST counter accept comment "Povol přístup na whitelist IP adresy"
+            ip saddr @self_cancel tcp dport $SELF_CANCEL_PORT add @allowed { ip saddr } counter comment "Povol internet pro IP adresy s upozorňovacím přesměrování po jeho zobrazení"
+            ip saddr @allowed counter accept comment "Povol internet pro IP adresy bez přesměrování"
+            ip saddr @ranges tcp dport http counter redirect to :$REDIRECT_PORT comment "Zobraz přesměrování pro IP adresy s přesměrováním (upozorňovací i blokující)"
+        }
+}

@@ -1,0 +1,99 @@
+{% set records = [] %}
+{% set ips = {} %}
+{% set cnames = {} %}
+{% set revers = [] %}
+{% for zone in data %}
+{% if item.key == zone or (".arpa" in item.key and ".arpa" not in zone) %}
+{% for key, values in data[zone].items() %}
+{% for value in values %}
+{% if ".arpa" not in item.key %}
+{% if value | ansible.utils.ipaddr %}
+{% set type = 'A' if (value | ansible.utils.ipv4) else 'AAAA' %}
+{% set tmp = records.append({
+    'key': key,
+    'value': value,
+    'type': type,
+    'cost': 0 if key == '@' else 10
+}) %}
+{% if key not in ips %}
+{% set tmp = ips.update({key: {}}) %}
+{% endif %}
+{% set tmp = ips[key].update({value: type}) %}
+{% else %}
+{% if key in ips %}
+{% if value != "@" and value not in ips %}
+{% set tmp = records.append({
+    'key': value,
+    'value': key,
+    'type': 'CNAME',
+    'cost': 10 if not value.startswith("*.") else 20
+}) %}
+{% elif value == "@" %}
+{% for ip, type in ips[key].items() %}
+{% set tmp = records.append({
+    'key': value,
+    'value': ip,
+    'type': type,
+    'cost': 0
+}) %}
+{% endfor %}
+{% endif %}
+{% elif key not in cnames %}
+{% set tmp = records.append({
+    'key': key,
+    'value': value|trim('.') + '.',
+    'type': 'CNAME',
+    'cost': 10 if not key.startswith("*.") else 20
+}) %}
+{% set tmp = cnames.update({key: value|trim('.') + '.',}) %}
+{% else %}
+{% set tmp = records.append({
+    'key': value,
+    'value': cnames[key],
+    'type': 'CNAME',
+    'cost': 10 if not value.startswith("*.") else 20
+}) %}
+{% endif %}
+{% endif %}
+{% elif value|ansible.utils.ipaddr %}
+{% set revdns = value|ansible.utils.ipaddr('revdns') %}
+{% if revdns not in revers and item.key in revdns %}
+{% set tmp = records.append({
+    'key': revdns|replace(item.key,"")|trim("."),
+    'value': key + '.' + (zone + '.' if ".arpa" not in zone else ''),
+    'type': 'PTR',
+    'cost': value|ansible.utils.ipaddr('int')
+}) %}
+{% set tmp = revers.append(revdns) %}
+{% endif %}
+{% elif item.key == zone %}
+{% set revdns = key|string + "." + zone + "." %}
+{% if revdns not in revers %}
+{% set parts = revdns|replace(".in-addr.arpa.", "")|replace(".ip6.arpa.", "")|split(".")|reverse %}
+{% if ".in-addr.arpa." in revdns %}
+{% set ip = parts|join(".") %}
+{% elif ".ip6.arpa." in revdns %}
+{% set p = [] %}
+{% for i in range(0, parts|length, 4) %}
+{% set tmp = p.append(parts[i:i+4]|join) %}
+{% endfor %}
+{% set ip = p|join(":") %}
+{% endif %}
+{% set tmp = records.append({
+    'key': key,
+    'value': value + ".",
+    'type': 'PTR',
+    'cost': ip|ansible.utils.ipaddr('int')
+}) %}
+{% set tmp = revers.append(revdns) %}
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% set previous = {"key": ""} %}
+{% for record in records|sort(attribute='cost,key') %}
+{{ "%-50s" | format(record.key if record.key != previous.key else "") }}{{ "%-10s" | format(record.type) }}{{ record.value }}
+{% set tmp = previous.update({'key': record.key}) %}
+{% endfor %}

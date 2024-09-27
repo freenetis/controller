@@ -1,0 +1,3 @@
+- name: Redirection reload
+  command: "{{ command }} {{ redirection_config }}"
+  become: true

@@ -1,0 +1,8 @@
+package: apache2
+unit: apache2
+modules:
+  - rewrite
+  - headers
+redirection_template: redirection.j2
+redirection_config: /etc/apache2/sites-available/redirection.conf
+redirection_config_enabled: /etc/apache2/sites-enabled/redirection.conf

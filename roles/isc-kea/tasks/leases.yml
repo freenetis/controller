@@ -1,0 +1,15 @@
+- name: Load leases from CSV file
+  read_csv:
+    path: /var/lib/kea/kea-leases4.csv
+  register: host_leases
+- name: Generate file with leases
+  local_action:
+    module: template
+    src: kea-leases4.j2
+    dest: kea-leases4.yml
+  run_once: true
+- name: Load leases to variable
+  local_action:
+    module: set_fact
+    leases: "{{ lookup('file','kea-leases4.yml') | from_yaml }}"
+  run_once: true

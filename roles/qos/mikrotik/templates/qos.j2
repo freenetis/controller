@@ -1,0 +1,9 @@
+{% set names = {} %}
+/queue simple
+remove [find]
+{% for id, class in qos_classes.items() %}
+{% set name = (class.name | unidecode) + " - " + id %}
+{% set temp = names.update({id | int: name }) %}
+add name="{{ name }}" max-limit={{ class.u_ceil }}/{{ class.d_ceil }} target={{ class.ip_addresses | join(",") }}{% if class.parent %} parent="{{ names[class.parent] }}" limit-at={{ class.u_rate }}/{{ class.d_rate }}{% endif %}
+
+{% endfor %}

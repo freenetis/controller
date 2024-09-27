@@ -1,0 +1,89 @@
+{% set freenetis_classes = {} %}
+{% include "generate_classes.j2" %}
+# {% set data = {'index': -1} %}
+# {% for id, class in freenetis_classes.json.items() %}
+# {% set classid = "%x" | format(id | int) %}
+# {% if not class.parent %}
+# # clsact qdiscs
+# qdisc add dev {{ interface }} clsact
+# qdisc add dev {{ ifb_interface }} clsact
+# # redirect upload to device {{ ifb_interface }}
+# filter add dev {{ interface }} ingress matchall action mirred egress redirect dev {{ ifb_interface }}
+# {% if extra_interface %}
+# qdisc add dev {{ extra_interface }} clsact
+# {% endif %}
+# # hash tables
+# filter add dev {{ interface }} egress priority 1 handle 801: u32 divisor 256
+# filter add dev {{ interface }} egress priority 1 u32 match ip dst any hashkey mask 0x0000ff00 at 16 link 801:
+# filter add dev {{ ifb_interface }} egress priority 1 handle 801: u32 divisor 256
+# filter add dev {{ ifb_interface }} egress priority 1 u32 match ip src any hashkey mask 0x0000ff00 at 12 link 801:
+# {% if extra_interface %}
+# filter add dev {{ extra_interface }} egress priority 1 handle 801: u32 divisor 256
+# filter add dev {{ extra_interface }} egress priority 1 u32 match ip dst any hashkey mask 0x0000ff00 at 16 link 801:
+# {% endif %}
+# {% for i in range(256) %}
+# filter add dev {{ interface }} egress priority 1 handle {{ "%x" | format(i + 1) }}: u32 divisor 256
+# filter add dev {{ interface }} egress priority 1 u32 ht 801:{{ "%x" | format(i) }} match ip dst any hashkey mask 0x000000ff at 16 link {{ "%x" | format(i + 1) }}:
+# filter add dev {{ ifb_interface }} egress priority 1 handle {{ "%x" | format(i + 1) }}: u32 divisor 256
+# filter add dev {{ ifb_interface }} egress priority 1 u32 ht 801:{{ "%x" | format(i) }} match ip src any hashkey mask 0x000000ff at 12 link {{ "%x" | format(i + 1) }}:
+# {% if extra_interface %}
+# filter add dev {{ extra_interface }} egress priority 1 handle {{ "%x" | format(i + 1) }}: u32 divisor 256
+# filter add dev {{ extra_interface }} egress priority 1 u32 ht 801:{{ "%x" | format(i) }} match ip dst any hashkey mask 0x000000ff at 16 link {{ "%x" | format(i + 1) }}:
+# {% endif %}
+# {% endfor %}
+# # root qdiscs and classes for {{ class.name }}
+# {% if queues > 1 %}
+# qdisc add dev {{ interface }} root handle 7FFF: mq
+# {% if extra_interface %}
+# qdisc add dev {{ extra_interface }} root handle 7FFF: mq
+# {% endif %}
+# {% endif %}
+# {% for i in range(queues) %}
+# {% set queue_classid = "%x" | format((id | int) + i) %}
+# qdisc add dev {{ interface }} {% if queues > 1%}parent 7FFF:{{ queue_classid }}{% else %}root{% endif %} handle {{ queue_classid }}: htb
+# class add dev {{ interface }} parent {{ queue_classid }}: classid {{ queue_classid }}:{{ classid }} htb rate {{ class.d_rate }}bit quantum {{ quantum }}
+# {% if extra_interface %}
+# qdisc add dev {{ extra_interface }} {% if queues > 1%}parent 7FFF:{{ queue_classid }}{% else %}root{% endif %} handle {{ queue_classid }}: htb
+# class add dev {{ extra_interface }} parent {{ queue_classid }}: classid {{ queue_classid }}:{{ classid }} htb rate {{ class.d_rate }}bit quantum {{ quantum }}
+# {% endif %}
+# {% endfor %}
+# qdisc add dev {{ ifb_interface }} root handle {{ classid }}: htb
+# class add dev {{ ifb_interface }} parent {{ classid }}: classid {{ classid }}:{{ classid }} htb rate {{ class.u_rate }}bit quantum {{ quantum }}
+# {% set temp = data.update({'root': id | int})  %}
+# {% else %}
+# {% set classid = "%x" | format((id | int) + queues - data.root) %}
+# {% if class.parent == data.root %}
+# {% set temp = data.update({'index': (data.index + 1) % queues})  %}
+# # classes for {{ class.name }}
+# class add dev {{ interface }} parent {{ "%x" | format(data.root + data.index) }}:{{ "%x" | format(data.root) }} classid {{ "%x" | format(data.root + data.index) }}:{{ classid }} htb ceil {{ class.d_ceil }} rate {{ class.d_rate }}bit quantum {{ quantum }}
+# class add dev {{ ifb_interface }} parent {{ "%x" | format(data.root) }}:{{ "%x" | format(data.root) }} classid {{ "%x" | format(data.root) }}:{{ classid }} htb ceil {{ class.u_ceil }} rate {{ class.u_rate }}bit quantum {{ quantum }}
+# {% if extra_interface %}
+# class add dev {{ extra_interface }} parent {{ "%x" | format(data.root + data.index) }}:{{ "%x" | format(data.root) }} classid {{ "%x" | format(data.root + data.index) }}:{{ classid }} htb ceil {{ class.d_ceil }} rate {{ class.d_rate }}bit quantum {{ quantum }}
+# {% endif %}
+# {% else %}
+# {% set parent = "%x" | format(class.parent + queues - data.root) %}
+# # classes for {{ class.name }}
+# class add dev {{ interface }} parent {{ "%x" | format(data.root + data.index) }}:{{ parent }} classid {{ "%x" | format(data.root + data.index) }}:{{ classid }} htb ceil {{ class.d_ceil }} rate {{ class.d_rate }}bit quantum {{ quantum }}
+# class add dev {{ ifb_interface }} parent {{ "%x" | format(data.root) }}:{{ parent }} classid {{ "%x" | format(data.root) }}:{{ classid }} htb ceil {{ class.u_ceil }} rate {{ class.u_rate }}bit quantum {{ quantum }}
+# {% if extra_interface %}
+# class add dev {{ extra_interface }} parent {{ "%x" | format(data.root + data.index) }}:{{ parent }} classid {{ "%x" | format(data.root + data.index) }}:{{ classid }} htb ceil {{ class.d_ceil }} rate {{ class.d_rate }}bit quantum {{ quantum }}
+# {% endif %}
+# {% if not class.children %}
+# qdisc add dev {{ interface }} parent {{ "%x" | format(data.root + data.index) }}:{{ classid }} handle {{ classid }}: sfq quantum {{ quantum }}
+# qdisc add dev {{ ifb_interface }} parent {{ "%x" | format(data.root) }}:{{ classid }} handle {{ classid }}: sfq quantum {{ quantum }}
+# {% if extra_interface %}
+# qdisc add dev {{ extra_interface }} parent {{ "%x" | format(data.root + data.index) }}:{{ classid }} handle {{ classid }}: sfq quantum {{ quantum }}
+# {% endif %}
+# {% for ip_address in class.ip_addresses %}
+# {% set parts = ip_address.split('.') %}
+# # filters for IP address {{ ip_address }}
+# filter add dev {{ interface }} egress priority 1 u32 ht {{ "%x" | format((parts[2] | int) + 1) }}:{{ "%x" | format(parts[3] | int) }}: match ip dst {{ parts[0] }}.{{ parts[1] }}.0.0/16 action skbedit{% if queues > 1 %} queue_mapping {{ data.index }}{% endif %} priority {{ "%x" | format(data.root + data.index) }}:{{ classid }}
+# filter add dev {{ ifb_interface }} egress priority 1 u32 ht {{ "%x" | format((parts[2] | int) + 1) }}:{{ "%x" | format(parts[3] | int) }}: match ip src {{ parts[0] }}.{{ parts[1] }}.0.0/16 action skbedit priority {{ "%x" | format(data.root) }}:{{ classid }}
+# {% if extra_interface %}
+# filter add dev {{ extra_interface }} egress priority 1 u32 ht {{ "%x" | format((parts[2] | int) + 1) }}:{{ "%x" | format(parts[3] | int) }}: match ip dst {{ parts[0] }}.{{ parts[1] }}.0.0/16 action skbedit{% if queues > 1 %} queue_mapping {{ data.index }}{% endif %} priority {{ "%x" | format(data.root + data.index) }}:{{ classid }}
+# {% endif %}
+# {% endfor %}
+# {% endif %}
+# {% endif %}
+# {% endif %}
+# {% endfor %}

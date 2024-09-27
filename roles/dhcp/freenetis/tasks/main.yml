@@ -1,0 +1,12 @@
+- name: Downloading DHCP subnets from FreenetIS API
+  local_action:
+    module: uri
+    url: "{{ freenetis_dhcp_subnets }}"
+    user: "{{ freenetis_user }}"
+    password: "{{ freenetis_token }}"
+  register: freenetis_dhcp_subnets
+  run_once: true
+- name: Set DHCP subnets from API response
+  set_fact:
+    dhcp_subnets: "{{ freenetis_dhcp_subnets.json }}"
+  run_once: true

@@ -1,0 +1,17 @@
+- name: Creating IFB device
+  modprobe:
+    name: ifb
+    state: present
+  become: true
+  notify: Configuring IFB device
+- name: Generating cleaning TC rules
+  template:
+    src: "{{ clean_template }}"
+    dest: "{{ clean_script }}"
+  become: true
+- name: Generating new TC rules
+  template:
+    src: "{{ template }}"
+    dest: "{{ script }}"
+  become: true
+  notify: Cleaning old TC rules

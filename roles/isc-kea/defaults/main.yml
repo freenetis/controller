@@ -1,0 +1,8 @@
+package: isc-kea-dhcp4-server
+unit: isc-kea-dhcp4-server
+template: kea-dhcp4.j2
+config: /etc/kea/kea-dhcp4.conf
+validate: kea-dhcp4 -t %s
+apt_key: https://dl.cloudsmith.io/public/isc/kea-2-2/gpg.A8CB727C62565FF8.key
+apt_repo: "deb https://dl.cloudsmith.io/public/isc/kea-2-2/deb/debian {{ ansible_distribution_release }} main"
+data: {}

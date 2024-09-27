@@ -1,0 +1,8 @@
+qdisc del dev {{ interface }} root
+qdisc del dev {{ interface }} clsact
+qdisc del dev {{ ifb_interface }} root
+qdisc del dev {{ ifb_interface }} clsact
+{% if extra_interface %}
+qdisc del dev {{ extra_interface }} root
+qdisc del dev {{ extra_interface }} clsact
+{% endif %}

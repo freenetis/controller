@@ -1,0 +1,25 @@
+{% for host in hostvars %}
+{% for lease in hostvars[host].host_leases.list %}
+{% if lease.hwaddr %}
+{% set key = lease.address + ":" + lease.hwaddr %}
+{% set item = {
+    "device_id": hostvars[host].device_id,
+    "ip_address": lease.address,
+    "mac_address": lease.hwaddr,
+    "hostname": lease.hostname,
+    "start": '%Y-%m-%d %H:%M:%S' | strftime(lease.expire | int - lease.valid_lifetime | int),
+    "end": '%Y-%m-%d %H:%M:%S' | strftime(lease.expire | int),
+    "count": 1
+} %}
+{% if key in data %}
+{% set tmp = data[key].update({
+   "end": item["end"],
+   "count": data[key]["count"] + 1
+}) %}
+{% else %}
+{% set tmp = data.update({ key: item }) %}
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endfor %}
+{{ data.values() | list | to_nice_yaml(sort_keys=False) }}

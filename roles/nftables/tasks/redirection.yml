@@ -1,0 +1,7 @@
+- name: Generating and testing new firewall config
+  template:
+    src: "{{ firewall_template }}"
+    dest: "{{ firewall_config }}"
+    validate: "{{ firewall_validate }}"
+  become: true
+  notify: Firewall reload

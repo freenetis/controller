@@ -1,0 +1,9 @@
+template: templates/tc.j2
+script: /tmp/{{ inventory_hostname }}.tc
+clean_template: templates/tc-clean.j2
+clean_script: /tmp/{{ inventory_hostname }}-clean.tc
+ifb_interface: ifb0
+extra_interface:
+quantum: 1514
+qlen: 1000
+queues: 1

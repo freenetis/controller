@@ -1,0 +1,1 @@
+freenetis_qos_classes_url: "{{ freenetis_url }}/index.php/cs/api/qos/classes/{{ freenetis_speed_group_id }}"

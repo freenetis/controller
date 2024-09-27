@@ -1,0 +1,14 @@
+{% set data = {} %}
+{% set path = [] %}
+{% for key, value in records.items() recursive %}
+{% if value is mapping %}
+{% set tmp = path.append(key) %}
+{% set tmp = loop(value.items()) %}
+{% else %}
+{{ path }} 
+{% set tmp = data.update({key: value}) %}
+{% endif %}
+{% endfor %}
+{# {% for key, value in data.items() %}
+{{ key }}: {{ value }}
+{% endfor %} #}

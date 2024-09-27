@@ -1,0 +1,13 @@
+---
+- name: Controller
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Load roles
+      include_role:
+        name: "{{ role|split(':') | first }}"
+        tasks_from: "{{ role|replace(role|split(':') | first + ':', '') if ':' in role else 'main' }}"
+        public: true
+      loop: "{{ roles }}"
+      loop_control:
+        loop_var: role

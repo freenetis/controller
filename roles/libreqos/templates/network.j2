@@ -1,0 +1,27 @@
+{% set network = {} %}
+{% set parents = {} %}
+{% set ids = {} %}
+{% set data = {} %}
+{% for id, class in classes.json.items() %}
+{% if class.children|length %}
+{% set tmp = ids.update({id: class.name|unidecode}) %}
+{% set item = {
+  "downloadBandwidthMbps": (class.d_ceil / 1048576) | round | int,
+  "uploadBandwidthMbps": (class.u_ceil / 1048576) | round | int,
+} %}
+{% set tmp = parents.update({ids[id]: item}) %}
+{% if class.parent %}
+{% if class.parent|int != data.root %}
+{% if "children" not in parents[ids[class.parent|string]] %}
+{% set tmp = parents[ids[class.parent|string]].update({"children": {}}) %}
+{% endif %}
+{% set tmp = parents[ids[class.parent|string]]["children"].update({ids[id]: item}) %}
+{% else %}
+{% set tmp = network.update({ids[id]: item}) %}
+{% endif %}
+{% else %}
+{% set tmp = data.update({"root": id|int})%}
+{% endif %}
+{% endif %}
+{% endfor %}
+{{ network|tojson(indent=4) }}

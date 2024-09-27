@@ -1,0 +1,7 @@
+- name: Generating and testing new firewall config
+  template:
+    src: "{{ redirection_template }}"
+    dest: "{{ redirection_config }}"
+    validate: "{{ validate }}"
+  become: true
+  notify: Redirection reload

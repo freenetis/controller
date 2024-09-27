@@ -1,0 +1,5 @@
+package: isc-dhcp-server
+unit: isc-dhcp-server
+template: isc-dhcp.j2
+config: /etc/dhcp/dhcpd.conf
+validate: dhcpd -t -cf %s

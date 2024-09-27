@@ -1,0 +1,9 @@
+- local_action:
+    module: uri
+    url: http://localhost:9090/cs/api/network/link/dhcp_leases
+    method: POST
+    user: pilot-gw1
+    password: 616xzP078JDLU0DNN9vyEbW2rWv6d40k
+    body_format: json
+    body: "{{ leases }}"
+  run_once: true

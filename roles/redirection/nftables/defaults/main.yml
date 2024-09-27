@@ -1,0 +1,4 @@
+validate: /usr/sbin/nft -c -f %s
+command: /usr/sbin/nft -f
+redirection_template: redirection.j2
+redirection_config: /tmp/redirection.conf
