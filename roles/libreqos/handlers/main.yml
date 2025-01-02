@@ -1,5 +1,0 @@
-- name: Reload LibreQoS
-  service:
-    name: "{{ scheduler_unit }}"
-    state: restarted
-  become: true
