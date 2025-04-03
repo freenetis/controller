@@ -1,3 +1,0 @@
-- name: Generating and testing new firewall config
-  junos_config:
-    src: "{{ firewall_template }}"

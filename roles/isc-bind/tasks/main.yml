@@ -1,6 +1,0 @@
-- name: Generate records
-  local_action:
-    module: template
-    src: generate.j2
-    dest: /tmp/records/data.yml
-  run_once: true

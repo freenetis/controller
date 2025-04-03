@@ -1,5 +1,0 @@
-http_package: apache2
-http_unit: apache2
-http_template: freenetis-redirection.j2
-http_config: /etc/apache2/sites-available/freenetis-redirection.conf
-http_config_enabled: /etc/apache2/sites-enabled/freenetis-redirection.conf

@@ -1,2 +1,0 @@
-template: templates/mikrotik.j2
-script: /tmp/{{ inventory_hostname }}.rsc
