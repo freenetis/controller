@@ -1,4 +1,4 @@
-template: nftables.j2
-config: /etc/nftables.conf
-validate: nft -c -f %s
-reload: nft -f {{ config }}
+firewall_template: nftables.j2
+firewall_config: /etc/nftables.conf
+firewall_validate: nft -c -f %s
+firewall_reload: nft -f {{ config }}

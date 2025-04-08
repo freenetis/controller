@@ -1,7 +1,7 @@
-- name: Generate firewall config
+- name: Firewall config generation
   template:
-    src: "{{ template }}"
-    dest: "{{ config }}"
-    validate: "{{ validate }}"
+    src: "{{ firewall_template }}"
+    dest: "{{ firewall_config }}"
+    validate: "{{ firewall_validate }}"
   become: true
-  notify: Reload firewall
+  notify: Firewall reload
