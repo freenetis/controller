@@ -1,7 +1,7 @@
 - name: Generating new ISC KEA config
   template:
-    src: "{{ template }}"
-    dest: "{{ config }}"
-    validate: "{{ validate }}"
+    src: "{{ dhcp_template }}"
+    dest: "{{ dhcp_config }}"
+    validate: "{{ dhcp_validate }}"
   become: true
   notify: Reload ISC KEA

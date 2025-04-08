@@ -1,5 +1,5 @@
 - name: Reload ISC KEA
   service:
-    name: "{{ unit }}"
+    name: "{{ dhcp_unit }}"
     state: reloaded
   become: true
