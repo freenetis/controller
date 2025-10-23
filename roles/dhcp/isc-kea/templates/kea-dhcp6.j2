@@ -1,17 +1,15 @@
 {
-    "Dhcp4": {
+    "Dhcp6": {
         "valid-lifetime": 500,
         "renew-timer": 100,
         "rebind-timer": 250,
         "server-tag": "all",
         "interfaces-config": {
             "interfaces": [
-{% for interface in dhcp4_interfaces %}
+{% for interface in dhcp6_interfaces %}
                 "{{ interface }}"{{ ", " if not loop.last else "" }}
 {% endfor %}
-            ],
-            "dhcp-socket-type": "udp",
-            "outbound-interface": "use-routing"
+            ]
         },
         "expired-leases-processing": {
             "reclaim-timer-wait-time": 3,
@@ -27,17 +25,17 @@
         ],
         "control-socket": {
             "socket-type": "unix",
-            "socket-name": "{{ dhcp4_socket }}"
+            "socket-name": "{{ dhcp6_socket }}"
         },
         "hooks-libraries": [
-{% for hook in dhcp4_hooks %}
+{% for hook in dhcp6_hooks %}
         {
             "library": "{{ hook }}"
         }{{ ", " if not loop.last else "" }}
 {% endfor %}
         ],
-        "subnet4": [
-{% for subnet in dhcp4_subnets %}
+        "subnet6": [
+{% for subnet in dhcp6_subnets %}
             # {{ subnet.name }}
             {
                 "subnet": "{{ subnet.subnet }}",
@@ -49,12 +47,9 @@
                     }{{ ", " if not loop.last else "" }}
 {% endfor %}
                 ],
-                "option-data": [{
-                        "name": "routers",
-                        "data": "{{ subnet.gateway }}"
-                    },
+                "option-data": [
                     {
-                        "name": "domain-name-servers",
+                        "name": "dns-servers",
                         "data": "{{ subnet.dns_servers|join(",") }}"
                     }
                 ],
@@ -64,7 +59,10 @@
                     # {{ host.comment }}
                     {
                         "hw-address": "{{ host.mac_address }}",
-                        "ip-address": "{{ host.ip_address }}"
+{% if host.prefix is defined %}
+                        "prefixes": ["{{ host.prefix }}"],
+{% endif %}
+                        "ip-addresses": ["{{ host.ip_address }}"]
                     }{{ ", " if not loop.last else "" }}
 {% endif %}
 {% endfor %}

@@ -1,7 +1,17 @@
-- name: Generating new ISC KEA config
+- name: Generating new ISC KEA DHCPv4 config
   template:
-    src: "{{ dhcp_template }}"
-    dest: "{{ dhcp_config }}"
-    validate: "{{ dhcp_validate }}"
+    src: "{{ dhcp4_template }}"
+    dest: "{{ dhcp4_config }}"
+    validate: "{{ dhcp4_validate }}"
+  when: dhcp4_enabled
   become: true
-  notify: Reload ISC KEA
+  notify: Reload ISC KEA DHCPv4
+
+- name: Generating new ISC KEA DHCPv6 config
+  template:
+    src: "{{ dhcp6_template }}"
+    dest: "{{ dhcp6_config }}"
+    validate: "{{ dhcp6_validate }}"
+  when: dhcp6_enabled
+  become: true
+  notify: Reload ISC KEA DHCPv6

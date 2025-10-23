@@ -1,9 +1,19 @@
-dhcp_package: isc-kea-dhcp4-server
-dhcp_unit: isc-kea-dhcp4-server
-dhcp_template: kea-dhcp4.j2
-dhcp_config: /etc/kea/kea-dhcp4.conf
-dhcp_validate: kea-dhcp4 -t %s
-dhcp_apt_key: https://dl.cloudsmith.io/public/isc/kea-2-2/gpg.A8CB727C62565FF8.key
-dhcp_apt_repo: "deb https://dl.cloudsmith.io/public/isc/kea-2-2/deb/debian {{ ansible_distribution_release }} main"
-dhcp_interfaces:
+dhcp4_enabled: true
+dhcp4_unit: isc-kea-dhcp4-server
+dhcp4_template: kea-dhcp4.j2
+dhcp4_config: /etc/kea/kea-dhcp4.conf
+dhcp4_validate: kea-dhcp4 -t %s
+dhcp4_interfaces:
   - "*"
+dhcp4_socket: kea4-ctrl-socket
+dhcp4_hooks: []
+
+dhcp6_enabled: false
+dhcp6_unit: isc-kea-dhcp6-server
+dhcp6_template: kea-dhcp6.j2
+dhcp6_config: /etc/kea/kea-dhcp6.conf
+dhcp6_validate: kea-dhcp6 -t %s
+dhcp6_interfaces:
+  - "*"
+dhcp6_socket: kea6-ctrl-socket
+dhcp6_hooks: []

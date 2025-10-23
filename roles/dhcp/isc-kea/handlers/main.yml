@@ -1,5 +1,10 @@
-- name: Reload ISC KEA
+- name: Reload ISC KEA DHCPv4
   service:
-    name: "{{ dhcp_unit }}"
+    name: "{{ dhcp4_unit }}"
+    state: reloaded
+  become: true
+- name: Reload ISC KEA DHCPv6
+  service:
+    name: "{{ dhcp6_unit }}"
     state: reloaded
   become: true
