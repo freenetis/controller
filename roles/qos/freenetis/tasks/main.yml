@@ -1,9 +1,9 @@
 - name: Downloading list of QoS classes from FreenetIS API
-  local_action:
-    module: uri
+  uri:
     url: "{{ freenetis_qos_classes_url }}"
     user: "{{ freenetis_user }}"
     password: "{{ freenetis_token }}"
+  delegate_to: localhost
   register: freenetis_qos_classes
 - name: Setting QoS classes from FreenetIS response
   set_fact:

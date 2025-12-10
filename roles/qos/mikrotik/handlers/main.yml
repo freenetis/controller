@@ -1,7 +1,9 @@
 - name: Mikrotik script copy
-  local_action: "shell sshpass -p {{ ansible_password }} scp -o StrictHostKeyChecking=no {{ qos_script }} {{ ansible_user}}@{{ ansible_host }}:{{ inventory_hostname }}.rsc"
+  shell: "sshpass -p {{ ansible_password }} scp -o StrictHostKeyChecking=no {{ qos_script }} {{ ansible_user}}@{{ ansible_host }}:{{ inventory_hostname }}.rsc"
   become: true
+  delegate_to: localhost
   notify: Mikrotik script run
 - name: Mikrotik script run
-  local_action: "shell sshpass -p {{ ansible_password }} ssh -o StrictHostKeyChecking=no {{ ansible_user}}@{{ ansible_host }} /import {{ inventory_hostname }}.rsc"
+  shell: "sshpass -p {{ ansible_password }} ssh -o StrictHostKeyChecking=no {{ ansible_user}}@{{ ansible_host }} /import {{ inventory_hostname }}.rsc"
   become: true
+  delegate_to: localhost

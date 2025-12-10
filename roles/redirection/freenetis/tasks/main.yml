@@ -1,25 +1,25 @@
 - name: Downloading list of ranges from FreenetIS API
-  local_action:
-    module: uri
+  uri:
     url: "{{ freenetis_redirection_ranges_url }}"
     user: "{{ freenetis_user }}"
     password: "{{ freenetis_token }}"
+  delegate_to: localhostd
   register: freenetis_redirection_ranges
   run_once: true
 - name: Downloading list of allowed IP addresses from FreenetIS API
-  local_action:
-    module: uri
+  uri:
     url: "{{ freenetis_redirection_allowed_url }}"
     user: "{{ freenetis_user }}"
     password: "{{ freenetis_token }}"
+  delegate_to: localhost
   register: freenetis_redirection_allowed
   run_once: true
 - name: Downloading list of self-cancel IP addresses from FreenetIS API
-  local_action:
-    module: uri
+  uri:
     url: "{{ freenetis_redirection_cancelable_url }}"
     user: "{{ freenetis_user }}"
     password: "{{ freenetis_token }}"
+  delegate_to: localhost
   register: freenetis_redirection_cancelable
   run_once: true
 - name: Setting data from FreenetIS API responses

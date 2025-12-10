@@ -1,11 +1,12 @@
 - name: Mikrotik script download
-  local_action: "shell sshpass -p {{ ansible_password }} scp -o StrictHostKeyChecking=no {{ ansible_user}}@{{ ansible_host }}:{{ inventory_hostname }}.rsc {{ qos_script }}"
+  shell: "sshpass -p {{ ansible_password }} scp -o StrictHostKeyChecking=no {{ ansible_user}}@{{ ansible_host }}:{{ inventory_hostname }}.rsc {{ qos_script }}"
+  delegate_to: localhost
   become: true
   ignore_errors: true
 - name: Generating Mikrotik script
-  local_action:
-    module: template
+  template:
     src: "{{ qos_template }}"
     dest: "{{ qos_script }}"
+  delegate_to: localhost
   become: true
   notify: Mikrotik script copy
