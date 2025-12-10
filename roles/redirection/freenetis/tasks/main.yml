@@ -3,7 +3,7 @@
     url: "{{ freenetis_redirection_ranges_url }}"
     user: "{{ freenetis_user }}"
     password: "{{ freenetis_token }}"
-  delegate_to: localhostd
+  delegate_to: localhost
   register: freenetis_redirection_ranges
   run_once: true
 - name: Downloading list of allowed IP addresses from FreenetIS API
